@@ -29,16 +29,28 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
-      # `enablement: true` lets the action auto-enable GitHub Pages on the
-      # repo on the first run. Without it, the action tries to GET the
-      # existing site config, gets 404 (because Pages isn't enabled), and
-      # the workflow fails.
+      # ===========================================================================
+      # ONE-TIME MANUAL SETUP REQUIRED:
+      #   1. Go to https://github.com/<owner>/<repo>/settings/pages
+      #   2. Under "Build and deployment" choose Source = "GitHub Actions"
+      #   3. Click Save
+      #
+      # Why we can't auto-enable: `enablement: true` on this action tries to
+      # call the GitHub REST API to create the Pages site, but the default
+      # GITHUB_TOKEN has `pages: write` only — that's enough to DEPLOY to an
+      # already-enabled Pages site, but not enough to flip the feature on
+      # for the first time. The API returns "Resource not accessible by
+      # integration" (HTTP 403). After the one-time manual enable, this
+      # workflow works on every push with no further setup.
+      #
+      # We do NOT set `enablement: true` here because it would fail with
+      # the same 403. The action still needs to run so the github-pages
+      # environment gets set up (and so the deployment URL is known).
+      # ===========================================================================
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - name: Upload docs/coverage as the Pages artifact
         uses: actions/upload-pages-artifact@v3
