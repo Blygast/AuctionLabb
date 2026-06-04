@@ -1,0 +1,112 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+# Cancel in-progress runs of the same workflow on the same branch.
+concurrency:
+  group: tests-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Backend unit tests — fast, no DB required.
+  # ---------------------------------------------------------------------------
+  backend-unit:
+    name: Backend · unit tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+          cache: true
+          cache-dependency-path: '**/*.csproj'
+
+      - name: Build
+        run: dotnet build AuctionApi.slnx --nologo --no-restore
+
+      - name: Unit tests
+        # Category!=Integration filters out the LocalDB-backed tests
+        # (the ubuntu-latest runner has no LocalDB).
+        run: dotnet test AuctionApi.Core.Tests --nologo --no-build --filter "Category!=Integration"
+
+  # ---------------------------------------------------------------------------
+  # Backend integration tests — require LocalDB, so Windows runner.
+  # ---------------------------------------------------------------------------
+  backend-integration:
+    name: Backend · integration tests
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+          cache: true
+          cache-dependency-path: '**/*.csproj'
+
+      - name: Build
+        run: dotnet build AuctionApi.slnx --nologo --no-restore
+
+      - name: Start LocalDB
+        # windows-latest ships with the SQL LocalDB instance. Make sure
+        # it's started before the tests try to open a connection.
+        run: sqllocaldb start mssqllocaldb
+
+      - name: Integration tests + coverage
+        # XPlat Code Coverage writes coverage.cobertura.xml into TestResults/.
+        run: >
+          dotnet test AuctionApi.Core.Tests
+          --nologo --no-build
+          --filter "Category=Integration"
+          --collect:"XPlat Code Coverage"
+          --results-directory ./TestResults
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-coverage
+          path: api/TestResults/**/coverage.cobertura.xml
+          if-no-files-found: warn
+
+  # ---------------------------------------------------------------------------
+  # Frontend — type-check (tsc), production build, lint.
+  # ---------------------------------------------------------------------------
+  frontend:
+    name: Frontend · build + lint
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: client/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Type-check + build
+        # `tsc -b && vite build` runs the type-checker first; both must pass.
+        run: npm run build
+
+      - name: Lint
+        run: npm run lint

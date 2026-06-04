@@ -1,11 +1,9 @@
-using System.Security.Claims;
-using AuctionApi.Data;
+using AuctionApi.Common.Mapping;
+using AuctionApi.Core.Interfaces;
+using AuctionApi.Core.Services;
 using AuctionApi.DTOs;
-using AuctionApi.Models;
-using AuctionApi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace AuctionApi.Controllers;
 
@@ -13,105 +11,44 @@ namespace AuctionApi.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly AppDbContext _context;
-    private readonly JwtService _jwtService;
+    private readonly AuthService _auth;
+    private readonly ICurrentUser _currentUser;
 
-    public AuthController(AppDbContext context, JwtService jwtService)
+    public AuthController(AuthService auth, ICurrentUser currentUser)
     {
-        _context = context;
-        _jwtService = jwtService;
+        _auth = auth;
+        _currentUser = currentUser;
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<AuthResponseDto>> Register(RegisterDto dto)
+    [AllowAnonymous]
+    public async Task<ActionResult<AuthResponseDto>> Register(RegisterDto dto, CancellationToken ct)
     {
-        if (await _context.Users.AnyAsync(u => u.Email == dto.Email))
-            return BadRequest("A user with this email already exists.");
-
-        var user = new User
-        {
-            Name = dto.Name,
-            Email = dto.Email,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password),
-            Role = "User",
-            IsActive = true
-        };
-
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
-
-        var token = _jwtService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
-
-        return Ok(new AuthResponseDto
-        {
-            Token = token,
-            UserId = user.Id,
-            Name = user.Name,
-            Email = user.Email,
-            Role = user.Role
-        });
+        var (user, token) = await _auth.RegisterAsync(dto.Name, dto.Email, dto.Password, ct);
+        return Ok(user.ToDto(token));
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<AuthResponseDto>> Login(LoginDto dto)
+    [AllowAnonymous]
+    public async Task<ActionResult<AuthResponseDto>> Login(LoginDto dto, CancellationToken ct)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
-
-        if (user == null || !BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
-            return Unauthorized("Invalid email or password.");
-
-        if (!user.IsActive)
-            return Unauthorized("This account has been deactivated.");
-
-        var token = _jwtService.GenerateToken(user.Id, user.Name, user.Email, user.Role);
-
-        return Ok(new AuthResponseDto
-        {
-            Token = token,
-            UserId = user.Id,
-            Name = user.Name,
-            Email = user.Email,
-            Role = user.Role
-        });
+        var (user, token) = await _auth.LoginAsync(dto.Email, dto.Password, ct);
+        return Ok(user.ToDto(token));
     }
 
     [HttpGet("me")]
     [Authorize]
-    public async Task<ActionResult<AuthResponseDto>> Me()
+    public async Task<ActionResult<AuthResponseDto>> Me(CancellationToken ct)
     {
-        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var user = await _context.Users.FindAsync(userId);
-
-        if (user == null) return Unauthorized();
-
-        return Ok(new AuthResponseDto
-        {
-            Token = string.Empty,
-            UserId = user.Id,
-            Name = user.Name,
-            Email = user.Email,
-            Role = user.Role
-        });
+        var user = await _auth.GetMeAsync(_currentUser.UserId, ct);
+        return Ok(user.ToMeDto());
     }
 
     [HttpPut("password")]
     [Authorize]
-    public async Task<IActionResult> UpdatePassword(UpdatePasswordDto dto)
+    public async Task<IActionResult> UpdatePassword(UpdatePasswordDto dto, CancellationToken ct)
     {
-        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        var user = await _context.Users.FindAsync(userId);
-
-        if (user == null) return Unauthorized();
-
-        if (!BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.PasswordHash))
-            return BadRequest("Current password is incorrect.");
-
-        if (dto.NewPassword.Length < 6)
-            return BadRequest("New password must be at least 6 characters.");
-
-        user.PasswordHash = BCrypt.Net.BCrypt.HashPassword(dto.NewPassword);
-        await _context.SaveChangesAsync();
-
+        await _auth.UpdatePasswordAsync(_currentUser.UserId, dto.CurrentPassword, dto.NewPassword, ct);
         return Ok(new { message = "Password updated successfully." });
     }
 }

@@ -1,70 +1,46 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
-import api from '../api/axios';
-
-interface User {
-  userId: number;
-  name: string;
-  email: string;
-  role: string;
-}
-
-interface AuthContextType {
-  user: User | null;
-  isAuthenticated: boolean;
-  isAdmin: boolean;
-  loading: boolean;
-  login: (email: string, password: string) => Promise<void>;
-  register: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
-}
-
-const AuthContext = createContext<AuthContextType | null>(null);
+import { useState, useEffect, type ReactNode } from 'react';
+import { authService } from '../services/authService';
+import { AuthContext, type AuthContextType } from './authContextValue';
+import type { AuthUser } from '../types';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
+  // Initialize loading from token presence: a stored token means we'll fetch /me
+  // in the effect, so the app should show a spinner until that resolves.
+  const [loading, setLoading] = useState<boolean>(() => Boolean(localStorage.getItem('token')));
+  const [user, setUser] = useState<AuthUser | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    if (token) {
-      api.get('/auth/me')
-        .then((res) => {
-          setUser({
-            userId: res.data.userId,
-            name: res.data.name,
-            email: res.data.email,
-            role: res.data.role || 'User',
-          });
-        })
-        .catch(() => {
-          localStorage.removeItem('token');
-        })
-        .finally(() => setLoading(false));
-    } else {
-      setLoading(false);
-    }
+    if (!token) return;
+
+    let cancelled = false;
+    authService
+      .me()
+      .then((u) => {
+        if (!cancelled) setUser(u);
+      })
+      .catch(() => {
+        if (!cancelled) localStorage.removeItem('token');
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const login = async (email: string, password: string) => {
-    const res = await api.post('/auth/login', { email, password });
-    localStorage.setItem('token', res.data.token);
-    setUser({
-      userId: res.data.userId,
-      name: res.data.name,
-      email: res.data.email,
-      role: res.data.role || 'User',
-    });
+    const res = await authService.login(email, password);
+    localStorage.setItem('token', res.token);
+    setUser({ userId: res.userId, name: res.name, email: res.email, role: res.role || 'User' });
   };
 
   const register = async (name: string, email: string, password: string) => {
-    const res = await api.post('/auth/register', { name, email, password });
-    localStorage.setItem('token', res.data.token);
-    setUser({
-      userId: res.data.userId,
-      name: res.data.name,
-      email: res.data.email,
-      role: res.data.role || 'User',
-    });
+    const res = await authService.register(name, email, password);
+    localStorage.setItem('token', res.token);
+    setUser({ userId: res.userId, name: res.name, email: res.email, role: res.role || 'User' });
   };
 
   const logout = () => {
@@ -72,18 +48,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
-  return (
-    <AuthContext.Provider value={{
-      user, isAuthenticated: !!user, isAdmin: user?.role === 'Admin',
-      loading, login, register, logout
-    }}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
+  const value: AuthContextType = {
+    user, isAuthenticated: !!user, isAdmin: user?.role === 'Admin',
+    loading, login, register, logout,
+  };
 
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within AuthProvider');
-  return context;
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

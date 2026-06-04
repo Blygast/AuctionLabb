@@ -1,0 +1,65 @@
+# Pre-commit hooks for AuctionLabb.
+#
+# Install once:
+#   pip install pre-commit
+#   pre-commit install
+#
+# After that every `git commit` runs the hooks below. To run them on demand:
+#   pre-commit run --all-files
+#
+# Skip on a single commit with `git commit --no-verify` when you have a reason.
+
+repos:
+  # -------------------------------------------------------------------------
+  # Generic hygiene: trim whitespace, final newline, yaml/json sanity, etc.
+  # -------------------------------------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        # Markdown allows two trailing spaces (line break); keep them.
+        args: [--markdown-linebreak-ext=md]
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+      - id: mixed-line-ending
+        args: [--fix=lf]
+
+  # -------------------------------------------------------------------------
+  # Backend: dotnet format (verify-only on commit, so we don't auto-mutate
+  # the staged tree — run `dotnet format` to fix, then re-stage).
+  # -------------------------------------------------------------------------
+  - repo: local
+    hooks:
+      - id: dotnet-format
+        name: dotnet format (verify)
+        language: system
+        pass_filenames: false
+        # Only run if a C# file is in the changeset.
+        files: '\.cs$'
+        entry: bash -c 'cd api && dotnet format AuctionApi.slnx --verify-no-changes --no-restore --verbosity quiet || (echo "dotnet format found issues — run \"dotnet format api/AuctionApi.slnx\" and re-stage." && exit 1)'
+
+  # -------------------------------------------------------------------------
+  # Frontend: ESLint (auto-fix on the staged files, then fail if anything
+  # was unfixable).
+  # -------------------------------------------------------------------------
+      - id: eslint
+        name: eslint (frontend)
+        language: system
+        pass_filenames: false
+        files: '\.(ts|tsx)$'
+        entry: bash -c 'cd client && npm run lint || (echo "ESLint reported issues above." && exit 1)'
+
+  # -------------------------------------------------------------------------
+  # Frontend: TypeScript type-check via `tsc --noEmit`. Cheap, catches the
+  # kind of breakage that ESLint misses.
+  # -------------------------------------------------------------------------
+      - id: tsc-check
+        name: tsc --noEmit (frontend)
+        language: system
+        pass_filenames: false
+        files: '\.(ts|tsx)$'
+        entry: bash -c 'cd client && npx tsc -b --noEmit'

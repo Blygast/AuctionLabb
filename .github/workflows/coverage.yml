@@ -1,0 +1,67 @@
+name: Refresh coverage report
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: write    # needed to commit the updated report
+
+jobs:
+  coverage:
+    name: Generate + commit HTML report
+    runs-on: windows-latest    # LocalDB is Windows-only
+    defaults:
+      run:
+        working-directory: api
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+          cache: true
+          cache-dependency-path: '**/*.csproj'
+
+      - name: Build
+        run: dotnet build AuctionApi.slnx --nologo --no-restore
+
+      - name: Start LocalDB
+        run: sqllocaldb start mssqllocaldb
+
+      - name: Run all tests with coverage
+        run: >
+          dotnet test AuctionApi.Core.Tests
+          --nologo --no-build
+          --collect:"XPlat Code Coverage"
+          --results-directory ./TestResults
+
+      - name: Install reportgenerator
+        run: dotnet tool install -g dotnet-reportgenerator-globaltool
+
+      - name: Generate HTML report into docs/coverage
+        shell: pwsh
+        run: |
+          $cov = Get-ChildItem ./TestResults -Recurse -Filter 'coverage.cobertura.xml' |
+                Sort-Object LastWriteTime -Descending | Select-Object -First 1
+          $env:PATH += ";$HOME/.dotnet/tools"
+          reportgenerator `
+            -reports:$cov.FullName `
+            -targetdir:../docs/coverage `
+            -reporttypes:Html
+          Write-Host "Coverage report generated at docs/coverage/index.html"
+
+      - name: Commit updated report
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ../docs/coverage
+          # Only commit if something changed
+          if git diff --cached --quiet; then
+            echo "No coverage changes to commit."
+          else
+            git commit -m "ci: refresh coverage report [skip ci]"
+            git push
+          fi

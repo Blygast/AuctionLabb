@@ -1,6 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../api/axios';
+import { auctionService } from '../services/auctionService';
+import { getErrorMessage } from '../utils/errors';
 
 export default function EditAuctionPage() {
   const { id } = useParams<{ id: string }>();
@@ -13,25 +14,24 @@ export default function EditAuctionPage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    api.get(`/auctions/${id}`).then((res) => {
-      setTitle(res.data.title);
-      setDescription(res.data.description);
-      setEndDate(new Date(res.data.endDate).toISOString().slice(0, 16));
-    }).catch(() => setError('Auction not found.'))
-    .finally(() => setLoading(false));
+    auctionService.get(Number(id))
+      .then((data) => {
+        setTitle(data.title);
+        setDescription(data.description);
+        setEndDate(new Date(data.endDate).toISOString().slice(0, 16));
+      })
+      .catch(() => setError('Auction not found.'))
+      .finally(() => setLoading(false));
   }, [id]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(''); setSubmitting(true);
     try {
-      await api.put(`/auctions/${id}`, {
-        title, description,
-        endDate: endDate ? new Date(endDate).toISOString() : undefined,
-      });
+      await auctionService.update(Number(id), { title, description, endDate });
       navigate(`/auction/${id}`);
-    } catch (err: any) {
-      setError(err.response?.data || 'Failed to update auction.');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to update auction.'));
     } finally { setSubmitting(false); }
   };
 

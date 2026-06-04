@@ -1,2 +1,6 @@
 <Solution>
+  <Project Path="AuctionApi/AuctionApi.csproj" />
+  <Project Path="AuctionApi.Core/AuctionApi.Core.csproj" />
+  <Project Path="AuctionApi.Core.Tests/AuctionApi.Core.Tests.csproj" />
+  <Project Path="AuctionApi.Data/AuctionApi.Data.csproj" />
 </Solution>

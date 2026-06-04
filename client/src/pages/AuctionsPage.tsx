@@ -1,41 +1,21 @@
-import { useState, useEffect } from 'react';
-import api from '../api/axios';
+import { useState } from 'react';
+import { useAuctions } from '../hooks/useAuctions';
+import type { AuctionStatus } from '../types';
 import AuctionCard from '../components/AuctionCard';
 
-interface Attachment { id: number; fileName: string; contentType: string; fileSize: number; uploadedAt: string; url: string; }
-interface Auction {
-  id: number; title: string; description: string; startingPrice: number;
-  endDate: string; isOpen: boolean; isActive: boolean; userName: string;
-  highestBid: number | null; attachments: Attachment[];
-}
-
 export default function AuctionsPage() {
-  const [auctions, setAuctions] = useState<Auction[]>([]);
   const [search, setSearch] = useState('');
-  const [status, setStatus] = useState('open');
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => { fetchAuctions(); }, [status]);
-
-  const fetchAuctions = async (query?: string, s?: string) => {
-    setLoading(true);
-    try {
-      const params: any = { status: s || status };
-      if (query) params.search = query;
-      const res = await api.get('/auctions', { params });
-      setAuctions(res.data);
-    } catch { setAuctions([]); }
-    finally { setLoading(false); }
-  };
+  const [status, setStatus] = useState<AuctionStatus>('open');
+  const { auctions, loading, refetch } = useAuctions(status);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    fetchAuctions(search);
+    refetch(search);
   };
 
-  const clearSearch = () => { setSearch(''); fetchAuctions(undefined, status); };
+  const clearSearch = () => { setSearch(''); refetch(undefined); };
 
-  const statusTabs = [
+  const statusTabs: { value: AuctionStatus; label: string }[] = [
     { value: 'open', label: 'Open' },
     { value: 'closed', label: 'Closed' },
     { value: 'all', label: 'All' },

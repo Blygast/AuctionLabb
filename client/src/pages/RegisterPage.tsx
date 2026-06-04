@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
+import { getErrorMessage } from '../utils/errors';
 import { useNavigate, Link } from 'react-router-dom';
+import { ROUTES } from '../routes';
 
 export default function RegisterPage() {
   const { register } = useAuth();
@@ -18,8 +20,8 @@ export default function RegisterPage() {
     try {
       await register(name, email, password);
       navigate('/');
-    } catch (err: any) {
-      setError(err.response?.data || 'Registration failed. Please try again.');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Registration failed. Please try again.'));
     } finally {
       setLoading(false);
     }
@@ -82,7 +84,7 @@ export default function RegisterPage() {
             </button>
             <p className="text-sm font-light text-gray-500 dark:text-gray-400">
               Already have an account?{' '}
-              <Link to="/login" className="font-medium text-primary-600 hover:underline dark:text-primary-500">
+              <Link to={ROUTES.login} className="font-medium text-primary-600 hover:underline dark:text-primary-500">
                 Login here
               </Link>
             </p>

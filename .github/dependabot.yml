@@ -1,0 +1,48 @@
+version: 2
+
+# ----------------------------------------------------------------------
+# .NET (NuGet) — backend
+# ----------------------------------------------------------------------
+- package-ecosystem: nuget
+  directory: /api
+  schedule:
+    interval: weekly
+    day: monday
+  open-pull-requests-limit: 10
+  # Group all minor + patch updates into a single PR per group to keep
+  # the noise down — major bumps get their own PR so you can review them.
+  groups:
+    nuget-minor-and-patch:
+      patterns: ["*"]
+      update-types: ["minor", "patch"]
+  labels:
+    - dependencies
+    - backend
+
+# ----------------------------------------------------------------------
+# npm — frontend
+# ----------------------------------------------------------------------
+- package-ecosystem: npm
+  directory: /client
+  schedule:
+    interval: weekly
+    day: monday
+  open-pull-requests-limit: 10
+  groups:
+    npm-minor-and-patch:
+      patterns: ["*"]
+      update-types: ["minor", "patch"]
+  labels:
+    - dependencies
+    - frontend
+
+# ----------------------------------------------------------------------
+# GitHub Actions — workflow pinning
+# ----------------------------------------------------------------------
+- package-ecosystem: github-actions
+  directory: /
+  schedule:
+    interval: monthly
+  labels:
+    - dependencies
+    - ci

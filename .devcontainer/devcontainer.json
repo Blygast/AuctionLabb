@@ -1,0 +1,67 @@
+{
+  "name": "AuctionLabb",
+
+  "image": "mcr.microsoft.com/devcontainers/dotnet:10.0",
+
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/git:1": {}
+  },
+
+  "forwardPorts": [5001, 5173, 8080],
+  "portsAttributes": {
+    "5001": {
+      "label": "Backend (https, dev)",
+      "protocol": "https",
+      "autoForward": true
+    },
+    "5173": {
+      "label": "Frontend (Vite dev)",
+      "autoForward": true
+    },
+    "8080": {
+      "label": "Backend (http, Docker)"
+    }
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-dotnettools.csdevkit",
+        "ms-dotnettools.csharp",
+        "ms-dotnettools.entityframeworkcore",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "[csharp]": {
+          "editor.defaultFormatter": "ms-dotnettools.csharp",
+          "editor.formatOnSave": true
+        },
+        "tailwindCSS.experimental.classRegex": [
+          ["className=\"([^\"]*)\"", "\"([^\"]*)\""]
+        ],
+        "files.associations": {
+          "*.css": "tailwindcss"
+        }
+      }
+    }
+  },
+
+  "postCreateCommand": "npm --prefix client install && dotnet restore api/AuctionApi.slnx",
+
+  "remoteUser": "vscode",
+
+  "workspaceFolder": "/workspaces/auctionlabb",
+
+  "hostRequirements": {
+    "cpus": 4,
+    "memory": "8gb",
+    "storage": "32gb"
+  }
+}

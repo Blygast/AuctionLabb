@@ -1,9 +1,6 @@
-using System.Security.Claims;
-using AuctionApi.Data;
-using AuctionApi.DTOs;
+using AuctionApi.Core.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace AuctionApi.Controllers;
 
@@ -12,71 +9,50 @@ namespace AuctionApi.Controllers;
 [Authorize(Roles = "Admin")]
 public class AdminController : ControllerBase
 {
-    private readonly AppDbContext _context;
+    private readonly AdminService _admin;
 
-    public AdminController(AppDbContext context)
+    public AdminController(AdminService admin)
     {
-        _context = context;
+        _admin = admin;
     }
 
     [HttpGet("users")]
-    public async Task<ActionResult> GetUsers()
+    public async Task<ActionResult> GetUsers(CancellationToken ct)
     {
-        var users = await _context.Users
-            .Select(u => new
-            {
-                u.Id, u.Name, u.Email, u.Role, u.IsActive,
-                AuctionCount = u.Auctions.Count,
-                BidCount = u.Bids.Count
-            })
-            .OrderBy(u => u.Id)
-            .ToListAsync();
-
-        return Ok(users);
+        var users = await _admin.ListUsersAsync(ct);
+        return Ok(users.Select(u => new
+        {
+            u.Id, u.Name, u.Email, u.Role, u.IsActive,
+            AuctionCount = u.Auctions.Count,
+            BidCount = u.Bids.Count,
+        }));
     }
 
-    [HttpPut("users/{id}/deactivate")]
-    public async Task<IActionResult> DeactivateUser(int id)
+    [HttpPut("users/{id:int}/deactivate")]
+    public async Task<IActionResult> DeactivateUser(int id, CancellationToken ct)
     {
-        var adminId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-        if (id == adminId) return BadRequest("You cannot deactivate your own account.");
-
-        var user = await _context.Users.FindAsync(id);
-        if (user == null) return NotFound();
-
-        user.IsActive = false;
-        await _context.SaveChangesAsync();
+        var user = await _admin.DeactivateUserAsync(id, ct);
         return Ok(new { message = $"User '{user.Name}' deactivated." });
     }
 
-    [HttpPut("users/{id}/activate")]
-    public async Task<IActionResult> ActivateUser(int id)
+    [HttpPut("users/{id:int}/activate")]
+    public async Task<IActionResult> ActivateUser(int id, CancellationToken ct)
     {
-        var user = await _context.Users.FindAsync(id);
-        if (user == null) return NotFound();
-
-        user.IsActive = true;
-        await _context.SaveChangesAsync();
+        var user = await _admin.ActivateUserAsync(id, ct);
         return Ok(new { message = $"User '{user.Name}' activated." });
     }
 
     [HttpGet("auctions")]
-    public async Task<ActionResult> GetAllAuctions()
+    public async Task<ActionResult> GetAllAuctions(CancellationToken ct)
     {
-        var auctions = await _context.Auctions
-            .Include(a => a.User)
-            .Include(a => a.Bids)
-            .OrderByDescending(a => a.StartDate)
-            .Select(a => new
-            {
-                a.Id, a.Title, a.IsActive, a.StartDate, a.EndDate,
-                a.StartingPrice, UserName = a.User.Name, a.UserId,
-                BidCount = a.Bids.Count,
-                HighestBid = a.Bids.Any() ? a.Bids.Max(b => b.Amount) : (decimal?)null,
-                IsOpen = a.EndDate > DateTime.UtcNow && a.IsActive
-            })
-            .ToListAsync();
-
-        return Ok(auctions);
+        var auctions = await _admin.ListAuctionsAsync(ct);
+        return Ok(auctions.Select(a => new
+        {
+            a.Id, a.Title, a.IsActive, a.StartDate, a.EndDate,
+            a.StartingPrice, UserName = a.User.Name, a.UserId,
+            BidCount = a.Bids.Count,
+            HighestBid = a.Bids.Any() ? a.Bids.Max(b => b.Amount) : (decimal?)null,
+            IsOpen = a.EndDate > DateTime.UtcNow && a.IsActive,
+        }));
     }
 }

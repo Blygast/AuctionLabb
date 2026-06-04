@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
+import { ROUTES } from '../routes';
 
 export default function Navbar() {
   const { isAuthenticated, user, logout } = useAuth();
@@ -73,7 +74,7 @@ export default function Navbar() {
                     <ul className="py-1">
                       <li>
                         <Link
-                          to="/create"
+                          to={ROUTES.create}
                           onClick={() => setDropdownOpen(false)}
                           className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                         >
@@ -95,13 +96,13 @@ export default function Navbar() {
             ) : (
               <>
                 <Link
-                  to="/login"
+                  to={ROUTES.login}
                   className="text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white px-4 py-2 text-sm font-medium"
                 >
                   Sign In
                 </Link>
                 <Link
-                  to="/register"
+                  to={ROUTES.register}
                   className="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2.5 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800"
                 >
                   Register

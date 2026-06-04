@@ -1,6 +1,8 @@
 import { useState, type FormEvent } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
+import { getErrorMessage } from '../utils/errors';
 import { useNavigate, Link } from 'react-router-dom';
+import { ROUTES } from '../routes';
 
 export default function LoginPage() {
   const { login } = useAuth();
@@ -17,8 +19,8 @@ export default function LoginPage() {
     try {
       await login(email, password);
       navigate('/');
-    } catch (err: any) {
-      setError(err.response?.data || 'Login failed. Please check your credentials.');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Login failed. Please check your credentials.'));
     } finally {
       setLoading(false);
     }
@@ -69,7 +71,7 @@ export default function LoginPage() {
             </button>
             <p className="text-sm font-light text-gray-500 dark:text-gray-400">
               Don't have an account yet?{' '}
-              <Link to="/register" className="font-medium text-primary-600 hover:underline dark:text-primary-500">
+              <Link to={ROUTES.register} className="font-medium text-primary-600 hover:underline dark:text-primary-500">
                 Sign up
               </Link>
             </p>

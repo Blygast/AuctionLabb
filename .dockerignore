@@ -1,0 +1,44 @@
+# .NET build artifacts
+**/bin/
+**/obj/
+**/out/
+**/publish/
+**/release/
+**/dist/
+**/wwwroot/
+
+# Test artifacts
+TestResults/
+coverage*/
+*.coverage
+*.coveragexml
+
+# Node
+**/node_modules/
+**/npm-debug.log*
+**/yarn-error.log*
+**/.npm/
+
+# IDE / OS
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+.DS_Store
+Thumbs.db
+
+# VCS
+.git/
+.gitignore
+.github/
+
+# Local config
+**/appsettings.Development.json
+**/.env
+**/.env.local
+**/.env.*.local
+
+# Docs (generated)
+*.log
+**/coverage/

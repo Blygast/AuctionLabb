@@ -1,3 +1,4 @@
+using AuctionApi.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuctionApi.Controllers;
@@ -6,26 +7,22 @@ namespace AuctionApi.Controllers;
 [Route("api/[controller]")]
 public class FilesController : ControllerBase
 {
-    private readonly IWebHostEnvironment _env;
+    private readonly IFileStorage _storage;
 
-    public FilesController(IWebHostEnvironment env)
+    public FilesController(IFileStorage storage)
     {
-        _env = env;
+        _storage = storage;
     }
 
     [HttpGet("{fileName}")]
     public IActionResult GetFile(string fileName)
     {
-        var filePath = Path.Combine(_env.ContentRootPath, "Uploads", fileName);
+        if (!_storage.Exists(fileName)) return NotFound();
 
-        if (!System.IO.File.Exists(filePath))
-            return NotFound();
-
-        var ext = Path.GetExtension(fileName).ToLowerInvariant();
-        var contentType = GetContentType(ext);
-
-        var bytes = System.IO.File.ReadAllBytes(filePath);
-        return File(bytes, contentType, Path.GetFileName(filePath));
+        var path = _storage.GetPath(fileName);
+        var bytes = System.IO.File.ReadAllBytes(path);
+        var contentType = GetContentType(Path.GetExtension(fileName).ToLowerInvariant());
+        return File(bytes, contentType, Path.GetFileName(path));
     }
 
     private static string GetContentType(string ext) => ext switch

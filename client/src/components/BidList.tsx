@@ -1,16 +1,11 @@
-interface Bid {
-  id: number;
-  amount: number;
-  bidDate: string;
-  userId: number;
-  userName: string;
-}
+import type { Bid } from '../types';
+import { formatPrice, formatDateTime } from '../utils/format';
 
-interface BidListProps {
+interface Props {
   bids: Bid[];
 }
 
-export default function BidList({ bids }: BidListProps) {
+export default function BidList({ bids }: Props) {
   if (bids.length === 0) {
     return (
       <div className="text-center py-8">
@@ -44,12 +39,8 @@ export default function BidList({ bids }: BidListProps) {
                   {bid.userName}
                 </div>
               </td>
-              <td className="px-6 py-4 font-semibold text-primary-600 dark:text-primary-500">${bid.amount.toFixed(2)}</td>
-              <td className="px-6 py-4">
-                {new Date(bid.bidDate).toLocaleDateString('en-US', {
-                  year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-                })}
-              </td>
+              <td className="px-6 py-4 font-semibold text-primary-600 dark:text-primary-500">{formatPrice(bid.amount)}</td>
+              <td className="px-6 py-4">{formatDateTime(bid.bidDate)}</td>
             </tr>
           ))}
         </tbody>

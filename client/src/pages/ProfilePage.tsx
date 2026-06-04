@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
-import { useAuth } from '../context/AuthContext';
-import api from '../api/axios';
+import { useAuth } from '../context/useAuth';
+import { authService } from '../services/authService';
+import { getErrorMessage } from '../utils/errors';
 
 export default function ProfilePage() {
   const { user } = useAuth();
@@ -26,11 +27,11 @@ export default function ProfilePage() {
 
     setLoading(true);
     try {
-      await api.put('/auth/password', { currentPassword, newPassword });
+      await authService.updatePassword(currentPassword, newPassword);
       setMessage('Password updated successfully.');
       setCurrentPassword(''); setNewPassword(''); setConfirmPassword('');
-    } catch (err: any) {
-      setError(err.response?.data || 'Failed to update password.');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Failed to update password.'));
     } finally { setLoading(false); }
   };
 

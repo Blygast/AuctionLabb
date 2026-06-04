@@ -35,3 +35,7 @@ Desktop.ini
 
 # Uploads
 api/AuctionApi/Uploads/
+
+# Test coverage (raw output; the HTML is committed under docs/coverage/ instead)
+TestResults/
+coverage.cobertura.xml

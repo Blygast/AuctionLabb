@@ -1,43 +1,20 @@
 import { Link } from 'react-router-dom';
-
-interface Attachment {
-  id: number;
-  fileName: string;
-  contentType: string;
-  fileSize: number;
-  uploadedAt: string;
-  url: string;
-}
-
-interface AuctionCardProps {
-  id: number;
-  title: string;
-  description: string;
-  startingPrice: number;
-  endDate: string;
-  isOpen: boolean;
-  isActive?: boolean;
-  userName: string;
-  highestBid: number | null;
-  attachments?: Attachment[];
-}
-
-const API_BASE = 'https://localhost:5001';
+import type { Auction } from '../types';
+import { SERVER_URL } from '../config';
+import { formatPrice, formatDateTime } from '../utils/format';
+import AuctionStatusBadge from './AuctionStatusBadge';
+import type { AuctionStatusKind } from './auctionStatus';
 
 export default function AuctionCard({
-  id,
-  title,
-  description,
-  startingPrice,
-  endDate,
-  isOpen,
-  isActive = true,
-  userName,
-  highestBid,
-  attachments,
-}: AuctionCardProps) {
-  const currentPrice = highestBid ?? startingPrice;
+  id, title, description, startingPrice, endDate,
+  isOpen, isActive = true, userName, highestBid, attachments,
+}: Auction) {
+  const status: AuctionStatusKind = !isActive
+    ? 'Deactivated'
+    : isOpen ? 'Open' : 'Closed';
+
   const firstImage = attachments?.find((a) => a.contentType.startsWith('image/'));
+  const fileCount = attachments?.length ?? 0;
 
   return (
     <Link
@@ -46,11 +23,7 @@ export default function AuctionCard({
     >
       {firstImage ? (
         <div className="h-40 overflow-hidden bg-gray-100 dark:bg-gray-700">
-          <img
-            src={`${API_BASE}${firstImage.url}`}
-            alt={title}
-            className="w-full h-full object-cover"
-          />
+          <img src={`${SERVER_URL}${firstImage.url}`} alt={title} className="w-full h-full object-cover" />
         </div>
       ) : (
         <div className="h-40 bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
@@ -59,49 +32,36 @@ export default function AuctionCard({
           </svg>
         </div>
       )}
+
       <div className="p-5">
         <div className="flex justify-between items-start mb-3">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">{title}</h3>
-          {!isActive ? (
-            <span className="bg-gray-100 text-gray-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
-              <span className="w-2 h-2 mr-1 rounded-full bg-gray-500" />
-              Deactivated
-            </span>
-          ) : isOpen ? (
-            <span className="bg-green-100 text-green-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
-              <span className="w-2 h-2 mr-1 rounded-full bg-green-500" />
-              Open
-            </span>
-          ) : (
-            <span className="bg-red-100 text-red-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">
-              <span className="w-2 h-2 mr-1 rounded-full bg-red-500" />
-              Closed
-            </span>
-          )}
+          <AuctionStatusBadge status={status} />
         </div>
+
         <p className="text-sm font-normal text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">{description}</p>
+
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs font-normal text-gray-500 dark:text-gray-400">Current Price</p>
-            <p className="text-xl font-bold text-primary-600 dark:text-primary-500">${currentPrice.toFixed(2)}</p>
+            <p className="text-xl font-bold text-primary-600 dark:text-primary-500">
+              {formatPrice(highestBid ?? startingPrice)}
+            </p>
           </div>
           <div className="text-right">
             <p className="text-xs font-normal text-gray-500 dark:text-gray-400">Seller</p>
             <p className="text-sm font-medium text-gray-900 dark:text-white">{userName}</p>
           </div>
         </div>
+
         <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between">
-          <p className="text-xs font-normal text-gray-500 dark:text-gray-400">
-            Ends: {new Date(endDate).toLocaleDateString('en-US', {
-              year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-            })}
-          </p>
-          {(attachments?.length ?? 0) > 0 && (
+          <p className="text-xs font-normal text-gray-500 dark:text-gray-400">Ends: {formatDateTime(endDate)}</p>
+          {fileCount > 0 && (
             <span className="text-xs text-gray-400 dark:text-gray-500 flex items-center">
               <svg className="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
               </svg>
-              {attachments!.length} file{attachments!.length !== 1 ? 's' : ''}
+              {fileCount} file{fileCount !== 1 ? 's' : ''}
             </span>
           )}
         </div>
