@@ -30,6 +30,11 @@ jobs:
           cache: true
           cache-dependency-path: '**/*.csproj'
 
+      - name: Restore
+        # Populates obj/project.assets.json so the --no-restore build can run.
+        # The Setup .NET step only caches ~/.nuget/packages, not obj/.
+        run: dotnet restore AuctionApi.slnx
+
       - name: Build
         run: dotnet build AuctionApi.slnx --nologo --no-restore
 
@@ -56,6 +61,11 @@ jobs:
           dotnet-version: 10.0.x
           cache: true
           cache-dependency-path: '**/*.csproj'
+
+      - name: Restore
+        # Populates obj/project.assets.json so the --no-restore build can run.
+        # The Setup .NET step only caches ~/.nuget/packages, not obj/.
+        run: dotnet restore AuctionApi.slnx
 
       - name: Build
         run: dotnet build AuctionApi.slnx --nologo --no-restore
