@@ -27,7 +27,7 @@ jobs:
 
       - name: Test backend
         working-directory: api
-        run: dotnet test AuctionApi.slnx --nologo --no-restore -c Release
+        run: dotnet test AuctionApi.slnx --nologo -c Release
         
       - name: Publish backend
         working-directory: api
