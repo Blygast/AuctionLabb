@@ -298,6 +298,7 @@ on GitHub (or in your local checkout):
 It is also published live to GitHub Pages by `.github/workflows/pages.yml`:
 
 **→ [Live coverage site](https://blygast.github.io/AuctionLabb/)**
+
 The report gets regenerated automatically by `.github/workflows/coverage.yml`
 on every push to `main`. That workflow runs the full
 test suite, generates the Cobertura + HTML reports, and commits the updated
