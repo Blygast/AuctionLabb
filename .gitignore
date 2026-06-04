@@ -34,8 +34,8 @@ Desktop.ini
 .DS_Store
 
 # Uploads
-api/AuctionApi/Uploads/
+!api/AuctionApi/Uploads/
 
 # Test coverage (raw output; the HTML is committed under docs/coverage/ instead)
-!TestResults/
-!coverage.cobertura.xml
+TestResults/
+coverage.cobertura.xml
