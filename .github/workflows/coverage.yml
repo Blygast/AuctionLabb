@@ -54,6 +54,9 @@ jobs:
           Write-Host "Coverage report generated at docs/coverage/index.html"
 
       - name: Commit updated report
+        # Earlier step set `shell: pwsh` for the reportgenerator invocation;
+        # pin bash here so `if/then/else/fi` parses correctly.
+        shell: bash
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
