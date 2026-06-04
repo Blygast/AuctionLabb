@@ -29,10 +29,16 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
+      # `enablement: true` lets the action auto-enable GitHub Pages on the
+      # repo on the first run. Without it, the action tries to GET the
+      # existing site config, gets 404 (because Pages isn't enabled), and
+      # the workflow fails.
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - name: Upload docs/coverage as the Pages artifact
         uses: actions/upload-pages-artifact@v3

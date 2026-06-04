@@ -21,7 +21,7 @@ jobs:
       run:
         working-directory: api
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -48,7 +48,7 @@ jobs:
       run:
         working-directory: api
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -92,7 +92,7 @@ jobs:
       run:
         working-directory: client
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup Node
         uses: actions/setup-node@v4
