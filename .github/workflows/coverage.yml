@@ -69,5 +69,7 @@ jobs:
             echo "No coverage changes to commit."
           else
             git commit -m "ci: refresh coverage report [skip ci]"
+            git fetch origin main
+            git rebase origin/main
             git push
           fi
