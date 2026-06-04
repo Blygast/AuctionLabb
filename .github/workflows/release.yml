@@ -13,7 +13,7 @@ jobs:
     name: Build + publish ${{ github.ref_name }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       # ------------------------------------------------------------------
       # Backend
@@ -25,10 +25,20 @@ jobs:
           cache: true
           cache-dependency-path: '**/*.csproj'
 
+      - name: Restore
+        # Populates obj/project.assets.json so the --no-restore test can run.
+        # The Setup .NET step only caches ~/.nuget/packages, not obj/.
+        run: dotnet restore AuctionApi.slnx
+
       - name: Test backend
         working-directory: api
-        run: dotnet test AuctionApi.slnx --nologo -c Release
+        run: dotnet test AuctionApi.slnx --nologo --no-restore -c Release --filter "Category!=Integration"
+        # Category!=Integration skips the LocalDB-backed tests because the
+        # ubuntu-latest runner has no LocalDB. Integration tests run on
+        # every push to master in test.yml's windows-latest job, so the
+        # code is already validated by the time we cut a release.
         
+
       - name: Publish backend
         working-directory: api
         run: >

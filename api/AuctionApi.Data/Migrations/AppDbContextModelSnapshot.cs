@@ -136,34 +136,34 @@ namespace AuctionApi.Data.Migrations
                         new
                         {
                             Id = 1,
-                            Description = "A delicate floral still life watercolor on paper by Pieter van Loo (Haarlem 1735–1784). Van Loo was a respected member of the Haarlem Painters' Guild, officially registered as a 'painter of flowers.' This classical Dutch botanical painting depicts a richly arranged bouquet in a vase, showcasing van Loo's meticulous attention to botanical detail and his mastery of the watercolor medium. Comparable works by van Loo have sold at European auctions in the range of €5,000–€15,000.",
+                            Description = "A delicate floral still life watercolor on paper by Pieter van Loo (Haarlem 1735â€“1784). Van Loo was a respected member of the Haarlem Painters' Guild, officially registered as a 'painter of flowers.' This classical Dutch botanical painting depicts a richly arranged bouquet in a vase, showcasing van Loo's meticulous attention to botanical detail and his mastery of the watercolor medium. Comparable works by van Loo have sold at European auctions in the range of â‚¬5,000â€“â‚¬15,000.",
                             EndDate = new DateTime(2026, 7, 15, 20, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
                             StartDate = new DateTime(2026, 5, 20, 12, 0, 0, 0, DateTimeKind.Utc),
                             StartingPrice = 8500.00m,
-                            Title = "Vase with Flowers — Pieter van Loo (c. 1745–1784)",
+                            Title = "Vase with Flowers â€” Pieter van Loo (c. 1745â€“1784)",
                             UserId = 2
                         },
                         new
                         {
                             Id = 2,
-                            Description = "A dramatic allegorical masterpiece of the Dutch Golden Age by Jan Asselijn (c. 1610–1652). Painted in oil on canvas around 1650, this life-sized depiction of a swan fiercely defending its nest has become one of the most iconic paintings in the Rijksmuseum collection. The work has been interpreted as a political allegory of the Dutch Republic defending itself against its enemies. As a national treasure of the Netherlands held in the Rijksmuseum, this painting is considered virtually priceless. Auction estimates for comparable Dutch Golden Age masterworks by major artists range from $2,000,000 to $5,000,000+.",
+                            Description = "A dramatic allegorical masterpiece of the Dutch Golden Age by Jan Asselijn (c. 1610â€“1652). Painted in oil on canvas around 1650, this life-sized depiction of a swan fiercely defending its nest has become one of the most iconic paintings in the Rijksmuseum collection. The work has been interpreted as a political allegory of the Dutch Republic defending itself against its enemies. As a national treasure of the Netherlands held in the Rijksmuseum, this painting is considered virtually priceless. Auction estimates for comparable Dutch Golden Age masterworks by major artists range from $2,000,000 to $5,000,000+.",
                             EndDate = new DateTime(2026, 8, 1, 20, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
                             StartDate = new DateTime(2026, 5, 25, 10, 0, 0, 0, DateTimeKind.Utc),
                             StartingPrice = 2200000.00m,
-                            Title = "The Threatened Swan — Jan Asselijn (c. 1650)",
+                            Title = "The Threatened Swan â€” Jan Asselijn (c. 1650)",
                             UserId = 2
                         },
                         new
                         {
                             Id = 3,
-                            Description = "A tranquil landscape masterpiece by Paul Joseph Constantin Gabriël (1828–1903), a leading painter of the Hague School, often referred to as Dutch Impressionism. This oil on canvas (102 x 66 cm) from c. 1889 is one of the most celebrated Dutch landscape paintings of the 19th century and is part of the Rijksmuseum's permanent collection. The painting captures a quintessential Dutch polder scene with a windmill under a luminous sky. Gabriël's works have achieved auction prices ranging from €15,000 for smaller studies to €132,000 for major canvases, with this being among his finest.",
+                            Description = "A tranquil landscape masterpiece by Paul Joseph Constantin GabriÃ«l (1828â€“1903), a leading painter of the Hague School, often referred to as Dutch Impressionism. This oil on canvas (102 x 66 cm) from c. 1889 is one of the most celebrated Dutch landscape paintings of the 19th century and is part of the Rijksmuseum's permanent collection. The painting captures a quintessential Dutch polder scene with a windmill under a luminous sky. GabriÃ«l's works have achieved auction prices ranging from â‚¬15,000 for smaller studies to â‚¬132,000 for major canvases, with this being among his finest.",
                             EndDate = new DateTime(2026, 8, 10, 20, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
                             StartDate = new DateTime(2026, 6, 1, 14, 0, 0, 0, DateTimeKind.Utc),
                             StartingPrice = 45000.00m,
-                            Title = "A Windmill on a Polder Waterway, 'In the Month of July' — Paul Joseph Constantin Gabriël (c. 1889)",
+                            Title = "A Windmill on a Polder Waterway, 'In the Month of July' â€” Paul Joseph Constantin GabriÃ«l (c. 1889)",
                             UserId = 2
                         });
                 });

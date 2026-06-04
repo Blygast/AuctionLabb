@@ -310,6 +310,7 @@ var assemblies = [
     "name": "AuctionApi.Data",
     "classes": [
       { "name": "AuctionApi.Data.AppDbContext", "rp": "AuctionApi.Data_AppDbContext.html", "cl": 152, "ucl": 4, "cal": 156, "tl": 176, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "AuctionApi.Data.AppDbContextDesignTimeFactory", "rp": "AuctionApi.Data_AppDbContextDesignTimeFactory.html", "cl": 0, "ucl": 8, "cal": 8, "tl": 24, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "AuctionApi.Data.Auth.BCryptPasswordHasher", "rp": "AuctionApi.Data_BCryptPasswordHasher.html", "cl": 0, "ucl": 2, "cal": 2, "tl": 9, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "AuctionApi.Data.Auth.JwtTokenService", "rp": "AuctionApi.Data_JwtTokenService.html", "cl": 0, "ucl": 25, "cal": 25, "tl": 44, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "AuctionApi.Data.Migrations.AppDbContextModelSnapshot", "rp": "AuctionApi.Data_AppDbContextModelSnapshot.html", "cl": 336, "ucl": 0, "cal": 336, "tl": 366, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },

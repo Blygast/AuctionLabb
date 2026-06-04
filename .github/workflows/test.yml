@@ -21,7 +21,7 @@ jobs:
       run:
         working-directory: api
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -29,6 +29,11 @@ jobs:
           dotnet-version: 10.0.x
           cache: true
           cache-dependency-path: '**/*.csproj'
+
+      - name: Restore
+        # Populates obj/project.assets.json so the --no-restore build can run.
+        # The Setup .NET step only caches ~/.nuget/packages, not obj/.
+        run: dotnet restore AuctionApi.slnx
 
       - name: Build
         run: dotnet build AuctionApi.slnx --nologo
@@ -48,7 +53,7 @@ jobs:
       run:
         working-directory: api
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -56,6 +61,11 @@ jobs:
           dotnet-version: 10.0.x
           cache: true
           cache-dependency-path: '**/*.csproj'
+
+      - name: Restore
+        # Populates obj/project.assets.json so the --no-restore build can run.
+        # The Setup .NET step only caches ~/.nuget/packages, not obj/.
+        run: dotnet restore AuctionApi.slnx
 
       - name: Build
         run: dotnet build AuctionApi.slnx --nologo
@@ -92,7 +102,7 @@ jobs:
       run:
         working-directory: client
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Setup Node
         uses: actions/setup-node@v4
