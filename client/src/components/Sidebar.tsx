@@ -12,6 +12,15 @@ export default function Sidebar() {
       isActive(path) ? 'bg-gray-100 dark:bg-gray-700' : ''
     }`;
 
+  const sectionHeader = (label: string, extra?: React.ReactNode) => (
+    <div className="pt-4 pb-1 px-3">
+      <div className="flex items-center p-2 text-xs font-normal text-gray-500 dark:text-gray-400">
+        <span className="ml-3 uppercase tracking-wider font-semibold">{label}</span>
+        {extra}
+      </div>
+    </div>
+  );
+
   return (
     <>
       <aside
@@ -21,8 +30,11 @@ export default function Sidebar() {
       >
         <div className="relative flex flex-col flex-1 min-h-0 pt-0 bg-white border-r border-gray-200 dark:bg-gray-800 dark:border-gray-700">
           <div className="flex flex-col flex-1 pt-5 pb-4 overflow-y-auto">
-            <div className="flex-1 px-3 space-y-1 bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-              <ul className="pb-2 space-y-2">
+            <div className="flex-1 px-3 bg-white dark:bg-gray-800">
+
+              {sectionHeader('Auction')}
+
+              <ul className="space-y-1">
                 <li>
                   <Link to="/" className={linkClass('/')}>
                     <svg className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
@@ -41,7 +53,41 @@ export default function Sidebar() {
                     </Link>
                   </li>
                 )}
-                {isAuthenticated && (
+              </ul>
+
+              {sectionHeader(
+                'Account',
+                isAuthenticated ? (
+                  <span className="ml-auto mr-3 flex items-center text-green-500 text-xs">
+                    <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                    </svg>
+                    Signed in
+                  </span>
+                ) : undefined
+              )}
+
+              <ul className="space-y-1">
+                {!isAuthenticated ? (
+                  <>
+                    <li>
+                      <Link to="/login" className={linkClass('/login')}>
+                        <svg className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                        </svg>
+                        <span className="ml-3">Sign In</span>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link to="/register" className={linkClass('/register')}>
+                        <svg className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
+                        </svg>
+                        <span className="ml-3">Register</span>
+                      </Link>
+                    </li>
+                  </>
+                ) : (
                   <li>
                     <Link to="/profile" className={linkClass('/profile')}>
                       <svg className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
@@ -51,13 +97,12 @@ export default function Sidebar() {
                     </Link>
                   </li>
                 )}
-                {isAdmin && (
-                  <>
-                    <li className="pt-2">
-                      <div className="flex items-center p-2 text-xs font-normal text-gray-500 dark:text-gray-400">
-                        <span className="ml-3 uppercase tracking-wider font-semibold">Admin</span>
-                      </div>
-                    </li>
+              </ul>
+
+              {isAdmin && (
+                <>
+                  {sectionHeader('Admin')}
+                  <ul className="space-y-1">
                     <li>
                       <Link to="/admin" className={linkClass('/admin')}>
                         <svg className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
@@ -66,37 +111,10 @@ export default function Sidebar() {
                         <span className="ml-3">Admin Panel</span>
                       </Link>
                     </li>
-                  </>
-                )}
-              </ul>
-              <div className="pt-2 space-y-2">
-                <div className="flex items-center p-2 text-xs font-normal text-gray-500 dark:text-gray-400">
-                  <span className="ml-3 uppercase tracking-wider font-semibold">Account</span>
-                </div>
-                {!isAuthenticated ? (
-                  <>
-                    <Link to="/login" className={linkClass('/login')}>
-                      <svg className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                      </svg>
-                      <span className="ml-3">Sign In</span>
-                    </Link>
-                    <Link to="/register" className={linkClass('/register')}>
-                      <svg className="w-6 h-6 text-gray-500 transition duration-75 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
-                      </svg>
-                      <span className="ml-3">Register</span>
-                    </Link>
-                  </>
-                ) : (
-                  <div className="flex items-center p-2 text-sm text-gray-500 dark:text-gray-400">
-                    <svg className="w-6 h-6 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                    </svg>
-                    <span className="ml-3">Signed in</span>
-                  </div>
-                )}
-              </div>
+                  </ul>
+                </>
+              )}
+
             </div>
           </div>
         </div>

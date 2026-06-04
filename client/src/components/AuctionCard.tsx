@@ -64,6 +64,7 @@ export default function AuctionCard({
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">{title}</h3>
           {!isActive ? (
             <span className="bg-gray-100 text-gray-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300">
+              <span className="w-2 h-2 mr-1 rounded-full bg-gray-500" />
               Deactivated
             </span>
           ) : isOpen ? (
@@ -73,6 +74,7 @@ export default function AuctionCard({
             </span>
           ) : (
             <span className="bg-red-100 text-red-800 text-xs font-medium inline-flex items-center px-2.5 py-0.5 rounded dark:bg-red-900 dark:text-red-300">
+              <span className="w-2 h-2 mr-1 rounded-full bg-red-500" />
               Closed
             </span>
           )}

@@ -38,17 +38,16 @@ public class AuctionsController : ControllerBase
     {
         var query = _context.Auctions
             .Include(a => a.User)
-            .Include(a => a.Bids)
+            .Include(a => a.Bids).ThenInclude(b => b.User)
             .Include(a => a.Attachments)
-            .Where(a => a.IsActive)
             .AsQueryable();
 
         query = status switch
         {
-            "open" => query.Where(a => a.EndDate > DateTime.UtcNow),
-            "closed" => query.Where(a => a.EndDate <= DateTime.UtcNow),
+            "open" => query.Where(a => a.IsActive && a.EndDate > DateTime.UtcNow),
+            "closed" => query.Where(a => !a.IsActive || a.EndDate <= DateTime.UtcNow),
             "all" => query,
-            _ => query
+            _ => query.Where(a => a.IsActive)
         };
 
         if (!string.IsNullOrWhiteSpace(search))
@@ -67,7 +66,7 @@ public class AuctionsController : ControllerBase
     {
         var auction = await _context.Auctions
             .Include(a => a.User)
-            .Include(a => a.Bids)
+            .Include(a => a.Bids).ThenInclude(b => b.User)
             .Include(a => a.Attachments)
             .FirstOrDefaultAsync(a => a.Id == id);
 
@@ -139,7 +138,7 @@ public class AuctionsController : ControllerBase
     {
         var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
         var auction = await _context.Auctions
-            .Include(a => a.User).Include(a => a.Bids).Include(a => a.Attachments)
+            .Include(a => a.User).Include(a => a.Bids).ThenInclude(b => b.User).Include(a => a.Attachments)
             .FirstOrDefaultAsync(a => a.Id == id);
 
         if (auction == null) return NotFound();

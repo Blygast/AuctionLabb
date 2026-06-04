@@ -88,18 +88,17 @@ export default function AuctionDetailPage() {
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">by {auction.userName}</p>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
-              {isOpen ? (
+              {!auction.isActive ? (
+                <span className="bg-gray-100 text-gray-800 text-sm font-medium inline-flex items-center px-3 py-1 rounded-full dark:bg-gray-700 dark:text-gray-300">
+                  <span className="w-2 h-2 mr-1.5 rounded-full bg-gray-500" /> Deactivated
+                </span>
+              ) : isOpen ? (
                 <span className="bg-green-100 text-green-800 text-sm font-medium inline-flex items-center px-3 py-1 rounded-full dark:bg-green-900 dark:text-green-300">
                   <span className="w-2 h-2 mr-1.5 rounded-full bg-green-500" /> Open
                 </span>
               ) : (
-                <span className="bg-gray-100 text-gray-800 text-sm font-medium inline-flex items-center px-3 py-1 rounded-full dark:bg-gray-600 dark:text-gray-300">
-                  Closed
-                </span>
-              )}
-              {!auction.isActive && (
                 <span className="bg-red-100 text-red-800 text-sm font-medium inline-flex items-center px-3 py-1 rounded-full dark:bg-red-900 dark:text-red-300">
-                  Deactivated
+                  <span className="w-2 h-2 mr-1.5 rounded-full bg-red-500" /> Closed
                 </span>
               )}
               {isOwner && isOpen && (
@@ -117,7 +116,7 @@ export default function AuctionDetailPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div className="bg-primary-50 dark:bg-primary-900/30 rounded-lg p-4 text-center">
               <dt className="text-xs font-normal text-primary-500 dark:text-primary-400 uppercase tracking-wider">
-                {isClosed ? 'Winning Bid' : 'Current Price'}
+                {isClosed && auction.isActive ? 'Winning Bid' : 'Current Price'}
               </dt>
               <dd className="text-2xl font-bold text-primary-700 dark:text-primary-300">${currentPrice.toFixed(2)}</dd>
             </div>
@@ -153,7 +152,7 @@ export default function AuctionDetailPage() {
             </div>
           )}
 
-          {isClosed && auction.winningBid && (
+          {isClosed && auction.isActive && auction.winningBid && (
             <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-4">
               <h4 className="text-sm font-semibold text-green-800 dark:text-green-300 mb-2">Winning Bid</h4>
               <div className="flex items-center justify-between">
