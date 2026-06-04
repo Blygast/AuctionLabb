@@ -27,7 +27,15 @@ jobs:
 
       - name: Test backend
         working-directory: api
+<<<<<<< Updated upstream
         run: dotnet test AuctionApi.slnx --nologo --no-restore -c Release
+=======
+        # Category!=Integration skips the LocalDB-backed tests because the
+        # ubuntu-latest runner has no LocalDB. Integration tests run on
+        # every push to master in test.yml's windows-latest job, so the
+        # code is already validated by the time we cut a release.
+        run: dotnet test AuctionApi.slnx --nologo -c Release --filter "Category!=Integration"
+>>>>>>> Stashed changes
 
       - name: Publish backend
         working-directory: api
