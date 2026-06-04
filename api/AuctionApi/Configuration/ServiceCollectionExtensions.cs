@@ -27,10 +27,14 @@ internal static class ServiceCollectionExtensions
         services.AddSingleton<IPasswordHasher, BCryptPasswordHasher>();
         services.AddSingleton<IJwtTokenService, JwtTokenService>();
 
-        // File storage rooted at <ContentRoot>/Uploads. Resolved at startup so
-        // the directory exists before the first upload.
-        services.AddSingleton<IFileStorage>(_ =>
-            new LocalFileStorage(Path.Combine(AppContext.BaseDirectory, "Uploads")));
+        // File storage rooted at <ContentRoot>/Uploads. Using ContentRootPath
+        // (the project directory) instead of AppContext.BaseDirectory (the
+        // bin output) means seed files placed under source control live in
+        // the same place new uploads get written — no fragile build-time
+        // copy via <Content Include="Uploads\**\*" /> required.
+        services.AddSingleton<IFileStorage>(sp =>
+            new LocalFileStorage(Path.Combine(
+                sp.GetRequiredService<IHostEnvironment>().ContentRootPath, "Uploads")));
 
         return services;
     }
