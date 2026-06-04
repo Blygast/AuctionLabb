@@ -16,7 +16,7 @@ jobs:
       run:
         working-directory: api
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -59,6 +59,7 @@ jobs:
           Write-Host "Coverage report generated at docs/coverage/index.html"
 
       - name: Commit updated report
+        shell: bash
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
