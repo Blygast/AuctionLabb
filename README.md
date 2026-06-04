@@ -3,9 +3,9 @@
 > A full-stack online auction platform — ASP.NET Core 10 + React 19
 
 
-[![Backend tests](https://img.shields.io/badge/backend-93%2F93%20passing-4c1?logo=dotnet)](https://github.com/USER/labb2/actions/workflows/test.yml)
-[![Frontend lint](https://img.shields.io/badge/frontend-0%20errors-4c1?logo=react)](https://github.com/USER/labb2/actions/workflows/test.yml)
-[![Coverage](https://img.shields.io/badge/coverage-93%25%20lines-4c1)](https://github.com/USER/labb2/actions/workflows/test.yml)
+[![Backend tests](https://img.shields.io/badge/backend-93%2F93%20passing-4c1?logo=dotnet)](https://github.com/Blygast/AuctionLabb/actions/workflows/test.yml)
+[![Frontend lint](https://img.shields.io/badge/frontend-0%20errors-4c1?logo=react)](https://github.com/Blygast/AuctionLabb/actions/workflows/test.yml)
+[![Coverage](https://img.shields.io/badge/coverage-93%25%20lines-4c1)](https://github.com/Blygast/AuctionLabb/actions/workflows/test.yml)
 [![.NET](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet)](https://dotnet.microsoft.com/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev/)
 
@@ -100,31 +100,31 @@ Core, JWT, or HTTP; `Data` implements the interfaces declared in `Core`; the
 `Api` project is a thin presentation layer.
 
 ```
-┌──────────────────────────────────────────────────────┐
-│  AuctionApi (presentation)                           │
+┌─────────────────────────────────────────────────────┐
+│           AuctionApi (presentation)                 │
 │  ┌─────────────────┐  ┌────────────────────────┐    │
 │  │   Controllers   │  │  Middleware / Mappers  │    │
 │  │  (thin shells)  │  │  (ExceptionFilter)     │    │
 │  └────────┬────────┘  └────────────┬───────────┘    │
-│           │  depends on             │               │
-│           ▼                         ▼               │
-│  ┌──────────────────────────────────────────────┐    │
-│  │  AuctionApi.Core (domain)                    │    │
-│  │  • Entities (User, Auction, Bid, Attachment) │    │
-│  │  • Interfaces (IUnitOfWork, IFileStorage…)   │    │
-│  │  • Services (Auth, Auction, Bid, Attachment) │    │
-│  │    ← pure business rules, no I/O             │    │
-│  └────────┬─────────────────────────────────────┘    │
-│           │  implements                               │
-│           ▼                                          │
-│  ┌──────────────────────────────────────────────┐    │
-│  │  AuctionApi.Data (infrastructure)            │    │
-│  │  • AppDbContext + EF migrations              │    │
-│  │  • Repository implementations                │    │
-│  │  • BCrypt + JWT implementations              │    │
-│  │  • LocalFileStorage                          │    │
-│  └──────────────────────────────────────────────┘    │
-└──────────────────────────────────────────────────────┘
+│           │       depends on       │                │
+│           ▼                        ▼                │
+│  ┌──────────────────────────────────────────────┐   │
+│  │  AuctionApi.Core (domain)                    │   │
+│  │  • Entities (User, Auction, Bid, Attachment) │   │
+│  │  • Interfaces (IUnitOfWork, IFileStorage…)   │   │
+│  │  • Services (Auth, Auction, Bid, Attachment) │   │
+│  │    ← pure business rules, no I/O             │   │
+│  └────────┬─────────────────────────────────────┘   │
+│           │  implements                             │
+│           ▼                                         │
+│  ┌──────────────────────────────────────────────┐   │
+│  │  AuctionApi.Data (infrastructure)            │   │
+│  │  • AppDbContext + EF migrations              │   │
+│  │  • Repository implementations                │   │
+│  │  • BCrypt + JWT implementations              │   │
+│  │  • LocalFileStorage                          │   │
+│  └──────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────┘
 ```
 
 The frontend has a thin page layer that composes reusable
@@ -132,10 +132,10 @@ components, which read from **custom hooks**, which call **typed service
 modules** that wrap Axios.
 
 ```
-┌────────────────────────────────────────────┐
-│  pages/  →  components/  →  hooks/  →  services/  →  http/axios  →  API
-│  (route)    (presentational)  (state)     (typed)        (infra)
-└────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────┐
+│  pages/  →  components/  →  hooks/  →  services/  →  http/axios  →  API  │
+│  (route)    (presentational)  (state)     (typed)        (infra)         │
+└──────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -297,8 +297,7 @@ on GitHub (or in your local checkout):
 
 It is also published live to GitHub Pages by `.github/workflows/pages.yml`:
 
-**→ [Live coverage site](https://github.com/Blygast/AuctionLabb/)**
-
+**→ [Live coverage site](https://blygast.github.io/AuctionLabb/)**
 The report gets regenerated automatically by `.github/workflows/coverage.yml`
 on every push to `main`. That workflow runs the full
 test suite, generates the Cobertura + HTML reports, and commits the updated
